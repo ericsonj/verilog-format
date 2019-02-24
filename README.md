@@ -2,7 +2,7 @@
 
 Java console aplication for verilog formatter.
 
-![](https://github.com/ericsonj/verilog-format/images/verilog-format.gif) 
+![](https://github.com/ericsonj/verilog-format/blob/master/images/verilog-format.gif) 
 
 ## How to use (Linux)
 
