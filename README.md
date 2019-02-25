@@ -2,7 +2,7 @@
 
 Java console aplication for verilog formatter.
 
-![](https://github.com/ericsonj/verilog-format/blob/master/images/verilog-format.gif) 
+![sample](images/verilog-format.gif) 
 
 ## How to use (Linux)
 
@@ -10,17 +10,17 @@ Java console aplication for verilog formatter.
 
     `$ git clone https://github.com/ericsonj/verilog-format.git`
 
-2. Copy files in bin/ to /opt/verilog-format/
+2. Install verilog-format
 
-    `$ cd verilog-format`  
+    `$ cd verilog-format/bin/`  
     `$ sudo mkdir /opt/verilog-format`  
-    `$ sudo cp bin/* /opt/verilog-format/`
+    `$ sudo unzip verilog-format-LINUX.zip -d /opt/verilog-format/`
 
 3. Execute like java  
 
     `$ java -jar /opt/verilog-format/verilog-format.jar`
 
-4. Exceute like linux script  
+4. Execute like linux script  
 
     `$ /opt/verilog-format/verilog-format`
 
@@ -30,12 +30,14 @@ Java console aplication for verilog formatter.
 
 ## How to use (Windows)
 
-TODO
+1. Clone repository or download [verilog-format-WIN.zip](bin/verilog-format-WIN.zip)  
 
+2. Unzip and copy in your preferer folder.
 
 ## Build project
 
 For build de project, Maven is needed.  
 
-`$ mvn clean compile assembly:single`  
-`$ cp target/verilog-format-1.0.0-full.jar bin/verilog-format-1.0.0.jar`
+`$ cd verilog-format`  
+`$ mvn clean package`  
+`$ ls target/`  
