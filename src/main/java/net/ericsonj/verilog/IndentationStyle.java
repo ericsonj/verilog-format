@@ -2,6 +2,7 @@ package net.ericsonj.verilog;
 
 import java.util.LinkedList;
 import net.ericsonj.verilog.statements.Always;
+import net.ericsonj.verilog.statements.BlockComment;
 import net.ericsonj.verilog.statements.Case;
 import net.ericsonj.verilog.statements.For;
 import net.ericsonj.verilog.statements.Forever;
@@ -24,6 +25,7 @@ public class IndentationStyle implements StyleImp {
     public IndentationStyle() {
         this.indents = new LinkedList<>();
 
+        this.indents.add(new BlockComment());
         this.indents.add(new For());
         this.indents.add(new While());
         this.indents.add(new Repeat());

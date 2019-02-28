@@ -1,16 +1,17 @@
 
 /**
-* File:   genrom.v
-* Author: Ericson Joseph
-*
-* Created on January 28, 2019,  8:15 PM
-*/
+ * File:   genrom.v
+ * Author: Ericson Joseph
+ *
+ * Created on January 28, 2019,  8:15 PM
+ */
 
 module genrom #(parameter AW = 5,
                 parameter DW = 4)
                (input clk,
                 input wire [AW-1:0] addr,
                 output reg [DW-1:0] data);
+    
     
     parameter ROMFILE = "rom1.list";
     
@@ -25,5 +26,6 @@ module genrom #(parameter AW = 5,
     initial begin
         $readmemh(ROMFILE, rom);
     end
+    
     
 endmodule
