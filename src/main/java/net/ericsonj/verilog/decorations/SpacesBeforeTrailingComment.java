@@ -10,7 +10,7 @@ import net.ericsonj.verilog.FileFormat;
 public class SpacesBeforeTrailingComment extends AbstractLineDecoration {
 
     @Override
-    public String decorateLine(FileFormat format, String line) {
+    public String decorateLine(FileFormat format, String line, int LineIndex) {
         if (format.getSpacesBeforeTrailingComments() == 0) {
             return line;
         } else {

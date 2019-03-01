@@ -51,5 +51,10 @@ public class FormatSetting {
         int value = Integer.parseInt(prop.getProperty(key, String.valueOf(defaultValue)));
         return value;
     }
+    
+    public boolean getBooleanValue(String key, boolean defaultValue){
+        String value = getStringValue(key, String.valueOf(defaultValue));
+        return Boolean.valueOf(value);
+    }
 
 }

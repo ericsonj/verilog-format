@@ -29,14 +29,14 @@ public abstract class AbstractLineDecoration implements StyleImp {
             }
             if (state == BLOCK_COMMNET_STATE.INIT
                     || (state == BLOCK_COMMNET_STATE.IN_BLOCK_COMMNET && inBlockComment())) {
-                line = decorateLine(format, line);
+                line = decorateLine(format, line, i);
                 buffer.remove(i);
                 buffer.add(i, line);
             }
         }
     }
 
-    public abstract String decorateLine(FileFormat format, String line);
+    public abstract String decorateLine(FileFormat format, String line, int lineIndex);
 
     public abstract boolean inBlockComment();
 

@@ -2,9 +2,15 @@ package net.ericsonj.verilog;
 
 import java.io.File;
 import net.ericsonj.commonscli.ConsoleApplication;
+import net.ericsonj.verilog.decorations.AlignBlockingAssignments;
+import net.ericsonj.verilog.decorations.AlignLineComment;
+import net.ericsonj.verilog.decorations.AlignNoBlockingAssignments;
 import net.ericsonj.verilog.decorations.ModuleAlign;
 import net.ericsonj.verilog.decorations.SpacesBeforeIfStatement;
 import net.ericsonj.verilog.decorations.SpacesBeforeTrailingComment;
+import net.ericsonj.verilog.decorations.SpacesBlockingAssignment;
+import net.ericsonj.verilog.decorations.SpacesInParentheses;
+import net.ericsonj.verilog.decorations.SpacesNoBlockingAssignment;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -101,6 +107,12 @@ public class VerilogFormat extends ConsoleApplication {
         vFile.addStyle(new ModuleAlign());
         vFile.addStyle(new SpacesBeforeTrailingComment());
         vFile.addStyle(new SpacesBeforeIfStatement());
+        vFile.addStyle(new SpacesBlockingAssignment());
+        vFile.addStyle(new SpacesNoBlockingAssignment());
+        vFile.addStyle(new SpacesInParentheses());
+        vFile.addStyle(new AlignBlockingAssignments());
+        vFile.addStyle(new AlignNoBlockingAssignments());
+        vFile.addStyle(new AlignLineComment());
         vFile.format();
         if (printFileFormated) {
             vFile.print();

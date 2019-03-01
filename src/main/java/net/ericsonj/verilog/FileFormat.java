@@ -10,6 +10,13 @@ public class FileFormat {
 
     public static final String SPACES_BEFORE_TRAILING_COMMENTS = "SpacesBeforeTrailingComments";
     public static final String SPACES_BEFORE_IF_STATEMENT = "SpacesBeforeIfStatement";
+    public static final String SPACES_BLOKING_ASSIGNMENTS = "SpacesBlockingAssignment";
+    public static final String SPACES_NOBLOKING_ASSIGNMENTS = "SpacesNoBlockingAssignment";
+    public static final String SPACES_IN_PARENTHESES = "SpacesInParentheses";
+    public static final String ALIGN_BLOKING_ASSIGNMENTS = "AlignBlockingAssignments";
+    public static final String ALIGN_NOBLOKING_ASSIGNMENTS = "AlignNoBlockingAssignments";
+    public static final String ALIGN_LINE_COMMENTS = "AlignLineComments";
+
     public static final char INDENT_TAB = '\t';
     public static final char INDENT_SPACE = ' ';
     public static final char LF = '\n';
@@ -66,10 +73,33 @@ public class FileFormat {
     public int getSpacesBeforeTrailingComments() {
         return this.setting.getIntValue(SPACES_BEFORE_TRAILING_COMMENTS, 1);
     }
-    
+
     public int getSpacesBeforeIfStatement() {
         return this.setting.getIntValue(SPACES_BEFORE_IF_STATEMENT, 1);
     }
 
-    
+    public int getSpacesBlockingAssignment() {
+        return this.setting.getIntValue(SPACES_BLOKING_ASSIGNMENTS, 1);
+    }
+
+    public int getSpacesNoBlockingAssignment() {
+        return this.setting.getIntValue(SPACES_NOBLOKING_ASSIGNMENTS, 1);
+    }
+
+    public boolean getAlignBlockingAssignments() {
+        return this.setting.getBooleanValue(ALIGN_BLOKING_ASSIGNMENTS, true);
+    }
+
+    public boolean getAlignNoBlockingAssignments() {
+        return this.setting.getBooleanValue(ALIGN_NOBLOKING_ASSIGNMENTS, true);
+    }
+
+    public boolean getAlignLineComments() {
+        return this.setting.getBooleanValue(ALIGN_LINE_COMMENTS, false);
+    }
+
+    public boolean getSpacesInParentheses() {
+        return this.setting.getBooleanValue(SPACES_IN_PARENTHESES, false);
+    }
+
 }

@@ -12,7 +12,7 @@ import net.ericsonj.verilog.FileFormat;
 public class SpacesBeforeIfStatement extends AbstractLineDecoration {
 
     @Override
-    public String decorateLine(FileFormat format, String line) {
+    public String decorateLine(FileFormat format, String line, int lineIndex) {
         int spaces = format.getSpacesBeforeIfStatement();
         String aux = line.replaceAll("if[ ]*", "if" + StringHelper.getSpaces(spaces));
         aux = aux.replaceAll("else[ ]*", "else" + StringHelper.getSpaces(spaces));
