@@ -3,6 +3,7 @@ package net.ericsonj.verilog;
 import java.io.File;
 import net.ericsonj.commonscli.ConsoleApplication;
 import net.ericsonj.verilog.decorations.ModuleAlign;
+import net.ericsonj.verilog.decorations.SpacesBeforeIfStatement;
 import net.ericsonj.verilog.decorations.SpacesBeforeTrailingComment;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -99,6 +100,7 @@ public class VerilogFormat extends ConsoleApplication {
         vFile.addStyle(new IndentationStyle());
         vFile.addStyle(new ModuleAlign());
         vFile.addStyle(new SpacesBeforeTrailingComment());
+        vFile.addStyle(new SpacesBeforeIfStatement());
         vFile.format();
         if (printFileFormated) {
             vFile.print();

@@ -1,5 +1,6 @@
 package net.ericsonj.verilog.statements;
 
+import net.ericsonj.util.StringHelper;
 import net.ericsonj.verilog.FileFormat;
 import net.ericsonj.verilog.LineIndentable;
 import net.ericsonj.verilog.StatementState;
@@ -10,10 +11,12 @@ import net.ericsonj.verilog.StatementState;
  */
 public class If extends LineIndentable {
 
+    private static final String COMMNET = "[ ]*[//|/*].*";
+
     @Override
     public String indentLine(FileFormat format, String line) {
 
-        if (line.matches("[ ]*if[ ]*.*[)]") || line.matches("[ ]*if[ ]*.*[ ]*begin")) {
+        if (matchesIf(line) || matchesIfBegin(line)) {
             IfState state = new IfState();
             state.setBaseIndent(format.getCountIndent());
             state.setState(IfState.IF_STATE.INIT);
@@ -36,13 +39,13 @@ public class If extends LineIndentable {
 
         switch (ifState.getState()) {
             case INIT:
-                if (line.matches("[ ]*if[ ]*.*[)]")) {
+                if (matchesIf(line)) {
                     format.addCountIndent();
                     ifState.setState(IfState.IF_STATE.IF);
                     ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                     return indent(format, ifState.getBaseIndent(), line);
                 }
-                if (line.matches("[ ]*if[ ]*.*[ ]*begin")) {
+                if (matchesIfBegin(line)) {
                     format.addCountIndent();
                     ifState.setState(IfState.IF_STATE.IF);
                     ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
@@ -54,7 +57,12 @@ public class If extends LineIndentable {
                     case INIT:
                         break;
                     case MAYBE_BLOCK:
-                        if (line.matches("[ ]*begin")) {
+                        if (line.matches(COMMNET)) {
+                            ifState.setState(IfState.IF_STATE.IF);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        }
+                        if (matchesBegin(line)) {
                             ifState.setState(IfState.IF_STATE.IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -64,26 +72,26 @@ public class If extends LineIndentable {
                         }
                         break;
                     case IN_BLOCK:
-                        if (line.matches("[ ]*end")) {
+                        if (matchesEnd(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.INIT);
                             return indent(format, ifState.getBaseIndent(), line);
                         }
                         break;
                     case NO_BLOCK:
-                        if (line.matches("[ ]*else[ ]*if[ ]*.*[)]")) {
+                        if (matchesElseIf(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*if[ ]*.*[ ]*begin")) {
+                        } else if (matchesElseIfBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else")) {
+                        } else if (matchesElse(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*begin")) {
+                        } else if (matchesElseBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -99,19 +107,19 @@ public class If extends LineIndentable {
             case ELSE_IF:
                 switch (ifState.getStateBlock()) {
                     case INIT:
-                        if (line.matches("[ ]*else[ ]*if[ ]*.*[)]")) {
+                        if (matchesElseIf(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*if[ ]*.*[ ]*begin")) {
+                        } else if (matchesElseIfBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else")) {
+                        } else if (matchesElse(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*begin")) {
+                        } else if (matchesElseBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -121,7 +129,11 @@ public class If extends LineIndentable {
                         }
                         break;
                     case MAYBE_BLOCK:
-                        if (line.matches("[ ]*begin")) {
+                        if (line.matches(COMMNET)) {
+                            ifState.setState(IfState.IF_STATE.ELSE_IF);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -131,26 +143,26 @@ public class If extends LineIndentable {
                         }
                         break;
                     case IN_BLOCK:
-                        if (line.matches("[ ]*end")) {
+                        if (matchesEnd(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.INIT);
                             return indent(format, ifState.getBaseIndent(), line);
                         }
                         break;
                     case NO_BLOCK:
-                        if (line.matches("[ ]*else")) {
+                        if (matchesElse(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*begin")) {
+                        } else if (matchesElseBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*if[ ]*.*[)]")) {
+                        } else if (matchesElseIf(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
-                        } else if (line.matches("[ ]*else[ ]*if[ ]*.*[ ]*begin")) {
+                        } else if (matchesElseIfBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -166,9 +178,22 @@ public class If extends LineIndentable {
             case ELSE:
                 switch (ifState.getStateBlock()) {
                     case INIT:
+                        if (matchesElse(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesElseBegin(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        }
                         break;
                     case MAYBE_BLOCK:
-                        if (line.matches("[ ]*begin")) {
+                        if (line.matches(COMMNET)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesBegin(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -181,7 +206,7 @@ public class If extends LineIndentable {
                         }
                         break;
                     case IN_BLOCK:
-                        if (line.matches("[ ]*end")) {
+                        if (matchesEnd(line)) {
                             format.resCountIndent();
                             format.states.poll();
                             return indent(format, ifState.getBaseIndent(), line);
@@ -191,7 +216,7 @@ public class If extends LineIndentable {
                         if (line.matches("[ ]*")) {
                             format.resCountIndent();
                             format.states.poll();
-                        } else if (line.matches("[ ]*end") || line.matches("[ ]*endmodule")) {
+                        } else if (matchesEnd(line) || line.matches("[ ]*endmodule")) {
                             format.resCountIndent();
                             format.states.poll();
                         }
@@ -206,6 +231,46 @@ public class If extends LineIndentable {
 
         return null;
 
+    }
+
+    private boolean matchesIf(String line) {
+        String ifBase = "[ ]*if[ ]*.*[)]";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+
+    private boolean matchesIfBegin(String line) {
+        String ifBase = "[ ]*if[ ]*.*[ ]*begin";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+
+    private boolean matchesBegin(String line) {
+        String ifBase = "[ ]*begin";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+
+    private boolean matchesEnd(String line) {
+        String ifBase = "[ ]*end";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+
+    private boolean matchesElse(String line) {
+        String ifBase = "[ ]*else";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+    
+    private boolean matchesElseBegin(String line) {
+        String ifBase = "[ ]*else[ ]*begin";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+    
+    private boolean matchesElseIf(String line) {
+        String ifBase = "[ ]*else[ ]*if[ ]*.*[)]";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+    
+    private boolean matchesElseIfBegin(String line) {
+        String ifBase = "[ ]*else[ ]*if[ ]*.*[ ]*begin";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 
 }

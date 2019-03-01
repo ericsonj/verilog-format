@@ -22,5 +22,13 @@ public class StringHelper {
         }
         return false;
     }
+    
+    public static String getSpaces(int count) {
+        String spaces = "";
+        for (int i = 0; i < count; i++) {
+            spaces += " ";
+        }
+        return spaces;
+    }
 
 }

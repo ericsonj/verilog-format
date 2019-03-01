@@ -9,6 +9,7 @@ import java.util.LinkedList;
 public class FileFormat {
 
     public static final String SPACES_BEFORE_TRAILING_COMMENTS = "SpacesBeforeTrailingComments";
+    public static final String SPACES_BEFORE_IF_STATEMENT = "SpacesBeforeIfStatement";
     public static final char INDENT_TAB = '\t';
     public static final char INDENT_SPACE = ' ';
     public static final char LF = '\n';
@@ -63,7 +64,12 @@ public class FileFormat {
     }
 
     public int getSpacesBeforeTrailingComments() {
-        return this.setting.getIntValue(SPACES_BEFORE_TRAILING_COMMENTS, 0);
+        return this.setting.getIntValue(SPACES_BEFORE_TRAILING_COMMENTS, 1);
+    }
+    
+    public int getSpacesBeforeIfStatement() {
+        return this.setting.getIntValue(SPACES_BEFORE_IF_STATEMENT, 1);
     }
 
+    
 }
