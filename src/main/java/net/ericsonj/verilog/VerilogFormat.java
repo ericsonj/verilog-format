@@ -3,6 +3,7 @@ package net.ericsonj.verilog;
 import java.io.File;
 import net.ericsonj.commonscli.ConsoleApplication;
 import net.ericsonj.verilog.decorations.ModuleAlign;
+import net.ericsonj.verilog.decorations.SpacesBeforeTrailingComment;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -77,7 +78,7 @@ public class VerilogFormat extends ConsoleApplication {
             } else {
                 settings = new FormatSetting(null);
             }
-            
+
         }
 
         if (line.hasOption("f")) {
@@ -96,7 +97,8 @@ public class VerilogFormat extends ConsoleApplication {
         FileFormat format = new FileFormat(this.settings);
         VerilogFile vFile = new VerilogFile(file.getAbsolutePath(), format);
         vFile.addStyle(new IndentationStyle());
-         vFile.addStyle(new ModuleAlign());
+        vFile.addStyle(new ModuleAlign());
+        vFile.addStyle(new SpacesBeforeTrailingComment());
         vFile.format();
         if (printFileFormated) {
             vFile.print();

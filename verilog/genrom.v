@@ -1,4 +1,3 @@
-
 /**
  * File:   genrom.v
  * Author: Ericson Joseph
@@ -12,6 +11,7 @@ module genrom #(parameter AW = 5,
                 input wire [AW-1:0] addr,
                 output reg [DW-1:0] data);
     
+    //holaa comentario
     
     parameter ROMFILE = "rom1.list";
     

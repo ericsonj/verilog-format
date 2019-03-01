@@ -8,6 +8,7 @@ import java.util.LinkedList;
  */
 public class FileFormat {
 
+    public static final String SPACES_BEFORE_TRAILING_COMMENTS = "SpacesBeforeTrailingComments";
     public static final char INDENT_TAB = '\t';
     public static final char INDENT_SPACE = ' ';
     public static final char LF = '\n';
@@ -59,6 +60,10 @@ public class FileFormat {
 
     public FormatSetting getSetting() {
         return setting;
+    }
+
+    public int getSpacesBeforeTrailingComments() {
+        return this.setting.getIntValue(SPACES_BEFORE_TRAILING_COMMENTS, 0);
     }
 
 }
