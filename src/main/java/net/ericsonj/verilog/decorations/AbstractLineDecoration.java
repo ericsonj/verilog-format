@@ -15,7 +15,7 @@ public abstract class AbstractLineDecoration implements StyleImp {
         IN_BLOCK_COMMNET
     }
 
-    private BLOCK_COMMNET_STATE state;
+    private BLOCK_COMMNET_STATE state = BLOCK_COMMNET_STATE.INIT;
 
     @Override
     public void applyStyle(FileFormat format, LinkedList<String> buffer) {
@@ -32,6 +32,8 @@ public abstract class AbstractLineDecoration implements StyleImp {
                 line = decorateLine(format, line, i);
                 buffer.remove(i);
                 buffer.add(i, line);
+            } else {
+                System.out.println("FUCK " + state.name());
             }
         }
     }
