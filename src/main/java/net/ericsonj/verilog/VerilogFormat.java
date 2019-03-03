@@ -47,7 +47,7 @@ public class VerilogFormat extends ConsoleApplication {
         options.addOption("p", "print", false, "print file formated");
         options.addOption(Option.builder("s")
                 .longOpt("settings")
-                .argName("settings-file")
+                .argName(FormatSetting.FILE_PROP)
                 .hasArg()
                 .desc("Settings config")
                 .build());
@@ -80,7 +80,7 @@ public class VerilogFormat extends ConsoleApplication {
             settings = new FormatSetting(new File(pathname));
         } else {
 
-            File localSetting = new File(".verilog-format.properties");
+            File localSetting = new File("."+FormatSetting.FILE_PROP);
             if (localSetting.exists()) {
                 settings = new FormatSetting(localSetting);
             } else {
@@ -130,6 +130,11 @@ public class VerilogFormat extends ConsoleApplication {
     @Override
     protected String getApplicationName() {
         return "verilog-format"; //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getCmdLineSyntax() {
+        return "[java -jar " + getApplicationName() + ".jar|./verilog-format|verilog-format.exe]";
     }
 
 }

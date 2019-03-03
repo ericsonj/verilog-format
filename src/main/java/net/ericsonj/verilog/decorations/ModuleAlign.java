@@ -57,8 +57,16 @@ public class ModuleAlign implements StyleImp {
                 LinkedList<String> lines = getCommentAlign(line, commentAlign, commnets.get(lastWord));
                 resp.remove(i);
                 resp.addAll(i, lines);
+            } else {
+                if (lastWord.matches("[^ ]+[)];")) {
+                    String newWordKey = lastWord.replace(");", "");
+                    if (commnets.containsKey(newWordKey)) {
+                        LinkedList<String> lines = getCommentAlign(line, commentAlign, commnets.get(newWordKey));
+                        resp.remove(i);
+                        resp.addAll(i, lines);
+                    }
+                }
             }
-
         }
 
         replaceInBuffer(buffer, startModuleLine, endModuleLine, resp);

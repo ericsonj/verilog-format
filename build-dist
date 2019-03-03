@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#MOV TO BIN
+cd bin/
+
+# BUILD FOR LINUX
+cp ../target/*-full.jar verilog-format.jar
+cp ../launch-linux/verilog-format .
+zip verilog-format-LINUX.zip verilog-format.jar verilog-format
+rm verilog-format.jar verilog-format
+
+# BUILD FOR WIN
+cp ../target/verilog-format.exe .
+zip verilog-format-WIN.zip verilog-format.exe
+rm verilog-format.exe
