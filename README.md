@@ -2,10 +2,15 @@
 
 Console application for apply format to verilog file.
 
+<<<<<<< HEAD
 ![sample](images/verilog-format.gif)
 
 ## How to use
 
+=======
+## How to use
+
+>>>>>>> cdb14c6040e8065435a6473e55fb360473ba2b66
 Application options:
 
 ```
