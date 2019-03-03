@@ -10,9 +10,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath net.ericsonj.verilog.VerilogFormat -p -f verilog/genrom.v</exec.args>
+                <exec.args>-classpath %classpath net.ericsonj.verilog.VerilogFormat -p -f /MYPROJECTS/ICE40-HX8K/echoserial1/echoserial1_tb.v</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/home/ericson/PROJECTS/JAVA/MAVEN/verilog-format</exec.workingdir>
+                <exec.workingdir>/MYPROJECTS/JAVA/MAVEN/verilog-format</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -25,10 +25,10 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath net.ericsonj.verilog.VerilogFormat -p -f verilog/genrom.v</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath net.ericsonj.verilog.VerilogFormat -p -f /MYPROJECTS/ICE40-HX8K/echoserial1/echoserial1_tb.v</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.workingdir>/home/ericson/PROJECTS/JAVA/MAVEN/verilog-format</exec.workingdir>
+                <exec.workingdir>/MYPROJECTS/JAVA/MAVEN/verilog-format</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -41,9 +41,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath net.ericsonj.verilog.VerilogFormat -p -f verilog/genrom.v</exec.args>
+                <exec.args>-classpath %classpath net.ericsonj.verilog.VerilogFormat -p -f /MYPROJECTS/ICE40-HX8K/echoserial1/echoserial1_tb.v</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/home/ericson/PROJECTS/JAVA/MAVEN/verilog-format</exec.workingdir>
+                <exec.workingdir>/MYPROJECTS/JAVA/MAVEN/verilog-format</exec.workingdir>
             </properties>
         </action>
     </actions>

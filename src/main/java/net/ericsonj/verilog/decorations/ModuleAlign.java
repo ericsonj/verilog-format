@@ -169,6 +169,11 @@ public class ModuleAlign implements StyleImp {
         }
 
         String moduleArgs = moduleInLine.substring(initBracket + 1, endBracket);
+        if (moduleArgs.isEmpty()) {
+            resp.set(endParamLine, resp.get(endParamLine) + moduleArgs + moduleInLine.substring(endBracket));
+            return resp;
+        }
+
         StringTokenizer st = new StringTokenizer(moduleArgs, ",");
         int count = st.countTokens();
         if (count == 1) {
