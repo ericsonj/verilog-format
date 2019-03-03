@@ -14,18 +14,20 @@ public class SpacesTrailingComment extends AbstractLineDecoration {
         if (format.getSpacesAfterTrailingComments() == 0) {
             return line;
         }
-        if(line.matches("[ ]*//.*")){
-            return line;
-        }
 
         String aux = line;
+        if (line.matches("[ ]*//.*")) {
+            if (format.getSpacesAfterTrailingComments() > 0) {
+                aux = aux.replaceAll("//[ ]*", "//" + StringHelper.getSpaces(format.getSpacesAfterTrailingComments()));
+            }
+            return aux;
+        }
         if (line.matches(".*[ ]+//.*")) {
             if (format.getSpacesAfterTrailingComments() > 0) {
                 aux = aux.replaceAll("//[ ]*", "//" + StringHelper.getSpaces(format.getSpacesAfterTrailingComments()));
             }
             if (format.getSpacesBeforeTrailingComments() > 0) {
                 aux = aux.replaceAll("[ ]*//", StringHelper.getSpaces(format.getSpacesBeforeTrailingComments()) + "//");
-                System.out.println("BEFORE1: "+format.getSpacesBeforeTrailingComments()+" "+aux);
             }
         } else if (line.matches(".*[^ ]//.*")) {
             if (format.getSpacesAfterTrailingComments() > 0) {
@@ -33,7 +35,6 @@ public class SpacesTrailingComment extends AbstractLineDecoration {
             }
             if (format.getSpacesBeforeTrailingComments() > 0) {
                 aux = aux.replaceAll("//", StringHelper.getSpaces(format.getSpacesBeforeTrailingComments()) + "//");
-                System.out.println("BEFORE2: "+format.getSpacesBeforeTrailingComments()+" "+aux);
             }
         }
 

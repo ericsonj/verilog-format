@@ -14,12 +14,14 @@ import java.util.Properties;
  */
 public class FormatSetting {
 
+    public static final String FILE_PROP = "verilog-format.properties";
+
     private File file;
     private Properties prop;
     private boolean filePresent;
 
     public FormatSetting() {
-        this(new File("verilog-format.properties"));
+        this(new File(FILE_PROP));
     }
 
     public FormatSetting(File file) {
@@ -46,13 +48,13 @@ public class FormatSetting {
     public String getStringValue(String key, String defaultValue) {
         return prop.getProperty(key, defaultValue);
     }
-    
+
     public int getIntValue(String key, int defaultValue) {
         int value = Integer.parseInt(prop.getProperty(key, String.valueOf(defaultValue)));
         return value;
     }
-    
-    public boolean getBooleanValue(String key, boolean defaultValue){
+
+    public boolean getBooleanValue(String key, boolean defaultValue) {
         String value = getStringValue(key, String.valueOf(defaultValue));
         return Boolean.valueOf(value);
     }

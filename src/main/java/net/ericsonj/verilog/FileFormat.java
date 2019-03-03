@@ -73,7 +73,7 @@ public class FileFormat {
     }
 
     public int getSpacesAfterTrailingComments() {
-        return this.setting.getIntValue(SPACES_AFTER_TRAILING_COMMENTS, 1);
+        return this.setting.getIntValue(SPACES_AFTER_TRAILING_COMMENTS, 0);
     }
     
     public int getSpacesBeforeTrailingComments() {
