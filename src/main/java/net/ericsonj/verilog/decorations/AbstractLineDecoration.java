@@ -32,8 +32,6 @@ public abstract class AbstractLineDecoration implements StyleImp {
                 line = decorateLine(format, line, i);
                 buffer.remove(i);
                 buffer.add(i, line);
-            } else {
-                System.out.println("FUCK " + state.name());
             }
         }
     }
