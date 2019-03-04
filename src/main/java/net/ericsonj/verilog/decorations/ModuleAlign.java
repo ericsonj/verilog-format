@@ -21,6 +21,16 @@ public class ModuleAlign implements StyleImp {
         LINE_COMMNET
     }
 
+    private String keyWord;
+
+    public ModuleAlign() {
+        this("module");
+    }
+
+    public ModuleAlign(String keyWord) {
+        this.keyWord = keyWord;
+    }
+
     private LinkedHashMap<String, String> commnets = new LinkedHashMap<>();
 
     @Override
@@ -31,7 +41,7 @@ public class ModuleAlign implements StyleImp {
 //        if (align.equals("BAS_Align")) {
 //            process(buffer);
 //        }
-        int startModuleLine = getIdxLineMatches(buffer, "[ ]*module[ ]+[a-zA-Z0-9-_,;&$# ]*.*", 0);
+        int startModuleLine = getIdxLineMatches(buffer, "[ ]*" + keyWord + "[ ]+[a-zA-Z0-9-_,;&$# ]*.*", 0);
         if (startModuleLine == -1) {
             return;
         }
