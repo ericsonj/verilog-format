@@ -96,6 +96,8 @@ public class ModuleAlign implements StyleImp {
     private String getModuleInLine(LinkedList<String> buffer, int startModuleLine, int endModuleLine) {
         StringBuilder sb = new StringBuilder();
 
+        int startIndet = getIndent(buffer.get(startModuleLine));
+
         for (int i = startModuleLine; i < endModuleLine + 1; i++) {
             sb.append(buffer.get(i).trim());
             sb.append(' ');
@@ -104,6 +106,8 @@ public class ModuleAlign implements StyleImp {
         String moduleDef = sb.toString().trim();
 
         moduleDef = orderLine(moduleDef);
+
+        moduleDef = indent(startIndet, moduleDef);
 
         return moduleDef;
 
@@ -123,6 +127,18 @@ public class ModuleAlign implements StyleImp {
             sb.insert(0, ' ');
         }
         return sb.toString();
+    }
+
+    private int getIndent(String line) {
+        int indent = 0;
+        for (int i = 0; i < line.length(); i++) {
+            if (line.charAt(i) == ' ') {
+                indent++;
+            } else {
+                break;
+            }
+        }
+        return indent;
     }
 
     private LinkedList<String> BASAlign(String moduleInLine) {
@@ -166,7 +182,7 @@ public class ModuleAlign implements StyleImp {
         }
 
         int initBracket = moduleInLine.indexOf("(", moduleWithParam ? endParamBrackt : 0);
-        int endBracket = moduleInLine.indexOf(")", moduleWithParam ? endParamBrackt + 1 : 0);
+        int endBracket = moduleInLine.lastIndexOf(")");
 
         int endParamLine = 0;
         if (moduleWithParam) {
@@ -270,12 +286,14 @@ public class ModuleAlign implements StyleImp {
     }
 
     private String orderLine(String line) {
+        int startIndet = getIndent(line);
         String orderLine = line.replaceAll("[#][ ]*[(]", "#(");
         orderLine = orderLine.replaceAll("[ ]+", " ");
         orderLine = orderLine.replaceAll("[(][ ]*", "(");
         orderLine = orderLine.replaceAll("[ ]*[)]", ")");
         orderLine = orderLine.replaceAll("[)][ ]*[;]", ");");
         orderLine = orderLine.replaceAll("[ ]*[,][ ]*", ", ");
+        orderLine = indent(startIndet, orderLine.trim());
         return orderLine;
     }
 

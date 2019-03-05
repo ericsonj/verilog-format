@@ -94,8 +94,7 @@ module fsmtx (input wire clk,       // -- Reloj del sistema (12MHz en ICEstick)
     
     // -- Divisor para obtener el reloj de transmision
     
-    baudgen #(BAUD)
-    BAUD0 (.clk(clk),
+    baudgen #(BAUD) BAUD0 (.clk(clk),
     .clk_ena(baud_en),
     .clk_out(clk_baud));
     

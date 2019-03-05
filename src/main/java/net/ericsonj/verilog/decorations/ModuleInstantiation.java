@@ -16,15 +16,24 @@ public class ModuleInstantiation implements StyleImp {
     @Override
     public void applyStyle(FileFormat format, LinkedList<String> buffer) {
         for (String line : buffer) {
-            Pattern p = Pattern.compile("[ ]*([A-Za-z_-]+)[ ]+.*");
+
+            if (line.matches("^[ ]*\\.*") || line.matches("^[ ]*/\\*.*")) {
+                continue;
+            }
+
+            Pattern p = Pattern.compile("^[ ]*([0-9A-Za-z-_]+)[ ]+.*");
             Matcher m = p.matcher(line);
             if (m.find()) {
                 String word = m.group(1);
-                if (!VerilogHelper.isKeyWord(word)) {
+                boolean isModuelInst = (line.matches(".*[ ]+[(].*") || line.matches(".*" + word + "[ ]+[#][(].*"));
+                if (!VerilogHelper.isKeyWord(word) && isModuelInst) {
+//                    System.out.println(line);
                     ModuleAlign align = new ModuleAlign(word);
                     align.applyStyle(format, buffer);
+                    break;
                 }
             }
+
         }
     }
 
