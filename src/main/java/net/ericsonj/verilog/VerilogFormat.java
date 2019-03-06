@@ -2,6 +2,7 @@ package net.ericsonj.verilog;
 
 import java.io.File;
 import net.ericsonj.commonscli.ConsoleApplication;
+import net.ericsonj.verilog.decorations.AbstractModuleAlign;
 import net.ericsonj.verilog.decorations.AlignBlockingAssignments;
 import net.ericsonj.verilog.decorations.AlignLineComment;
 import net.ericsonj.verilog.decorations.AlignNoBlockingAssignments;
@@ -106,8 +107,11 @@ public class VerilogFormat extends ConsoleApplication {
         FileFormat format = new FileFormat(this.settings);
         VerilogFile vFile = new VerilogFile(file.getAbsolutePath(), format);
         vFile.addStyle(new IndentationStyle());
-        vFile.addStyle(new ModuleAlign());
-        vFile.addStyle(new ModuleInstantiation());
+//        vFile.addStyle(new ModuleAlign());
+//        vFile.addStyle(new ModuleInstantiation());
+
+        vFile.addStyle(new AbstractModuleAlign());
+
         vFile.addStyle(new SpacesTrailingComment());
         vFile.addStyle(new SpacesBeforeIfStatement());
         vFile.addStyle(new SpacesBlockingAssignment());
