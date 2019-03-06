@@ -110,7 +110,7 @@ public class VerilogFormat extends ConsoleApplication {
 //        vFile.addStyle(new ModuleAlign());
 //        vFile.addStyle(new ModuleInstantiation());
 
-        vFile.addStyle(new AbstractModuleAlign());
+//        vFile.addStyle(new AbstractModuleAlign());
 
         vFile.addStyle(new SpacesTrailingComment());
         vFile.addStyle(new SpacesBeforeIfStatement());
