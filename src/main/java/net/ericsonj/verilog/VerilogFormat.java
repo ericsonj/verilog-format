@@ -82,7 +82,7 @@ public class VerilogFormat extends ConsoleApplication {
             settings = new FormatSetting(new File(pathname));
         } else {
 
-            File localSetting = new File("."+FormatSetting.FILE_PROP);
+            File localSetting = new File("." + FormatSetting.FILE_PROP);
             if (localSetting.exists()) {
                 settings = new FormatSetting(localSetting);
             } else {
@@ -107,11 +107,7 @@ public class VerilogFormat extends ConsoleApplication {
         FileFormat format = new FileFormat(this.settings);
         VerilogFile vFile = new VerilogFile(file.getAbsolutePath(), format);
         vFile.addStyle(new IndentationStyle());
-//        vFile.addStyle(new ModuleAlign());
-//        vFile.addStyle(new ModuleInstantiation());
-
-        vFile.addStyle(new AbstractModuleAlign());
-
+        vFile.addStyle(new ModuleAlign());
         vFile.addStyle(new SpacesTrailingComment());
         vFile.addStyle(new SpacesBeforeIfStatement());
         vFile.addStyle(new SpacesBlockingAssignment());
