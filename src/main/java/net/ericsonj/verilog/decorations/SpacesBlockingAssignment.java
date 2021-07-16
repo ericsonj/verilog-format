@@ -15,7 +15,7 @@ public class SpacesBlockingAssignment extends AbstractLineDecoration {
             return line;
         }
         if (line.matches(".*[^<]=.*")) {
-            String aux = line.replaceAll("[ ]*[^=!<>&|~\\^+\\-*/]=[ ]*", StringHelper.getSpaces(format.getSpacesBlockingAssignment()) + "=" + StringHelper.getSpaces(format.getSpacesBlockingAssignment()));
+            String aux = line.replaceAll("[ ]*(?<![=!<>&|~^+\\-*/])=", StringHelper.getSpaces(format.getSpacesBlockingAssignment()) + "=").replaceAll("=(?![=])[ ]*", "=" + StringHelper.getSpaces(format.getSpacesBlockingAssignment()));
             return aux;
         }
         return line;
