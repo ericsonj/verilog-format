@@ -216,7 +216,7 @@ public class If extends LineIndentable {
                         if (line.matches("[ ]*")) {
                             format.resCountIndent();
                             format.states.poll();
-                        } else if (matchesEnd(line) || line.matches("[ ]*endmodule")) {
+                        } else if (matchesEnd(line) || line.matches("[ ]*\\bendmodule\\b")) {
                             format.resCountIndent();
                             format.states.poll();
                         }
@@ -234,42 +234,42 @@ public class If extends LineIndentable {
     }
 
     private boolean matchesIf(String line) {
-        String ifBase = "[ ]*if[ ]*.*[)]";
+        String ifBase = "[ ]*\\bif\\b[ ]*.*[)]";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 
     private boolean matchesIfBegin(String line) {
-        String ifBase = "[ ]*if[ ]*.*[ ]*begin";
+        String ifBase = "[ ]*\\bif\\b[ ]*.*[ ]*\\bbegin\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 
     private boolean matchesBegin(String line) {
-        String ifBase = "[ ]*begin";
+        String ifBase = "[ ]*\\bbegin\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 
     private boolean matchesEnd(String line) {
-        String ifBase = "[ ]*end";
+        String ifBase = "[ ]*\\bend\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 
     private boolean matchesElse(String line) {
-        String ifBase = "[ ]*else";
+        String ifBase = "[ ]*\\belse\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
     
     private boolean matchesElseBegin(String line) {
-        String ifBase = "[ ]*else[ ]*begin";
+        String ifBase = "[ ]*\\belse\\b[ ]*\\bbegin\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
     
     private boolean matchesElseIf(String line) {
-        String ifBase = "[ ]*else[ ]*if[ ]*.*[)]";
+        String ifBase = "[ ]*\\belse\\b[ ]*\\bif\\b[ ]*.*[)]";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
     
     private boolean matchesElseIfBegin(String line) {
-        String ifBase = "[ ]*else[ ]*if[ ]*.*[ ]*begin";
+        String ifBase = "[ ]*\\belse\\b[ ]*\\bif\\b[ ]*.*[ ]*\\bbegin\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 

@@ -50,7 +50,7 @@ public class AlignConsecutive extends AbstractLineDecoration {
                 if (assignmentIdx < assignmentsBlock.getAlignValue()) {
                     line = line.replaceAll(getKey(), StringHelper.getSpaces(assignmentsBlock.getAlignValue() - assignmentIdx) + getKey());
                     if (getKey().equals("=")) {
-                        line = line.replaceAll("[ ]*=[ ]*=[ ]*", " == ");
+                        line = line.replaceAll("[ ]*([=!<>&|~^+\\-*/]+)[ ]*=[ ]*", " $1= ");
                     }
                 }
                 buffer.remove(i);

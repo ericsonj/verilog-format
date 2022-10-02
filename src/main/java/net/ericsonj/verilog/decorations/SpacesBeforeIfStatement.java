@@ -15,11 +15,11 @@ public class SpacesBeforeIfStatement extends AbstractLineDecoration {
     public String decorateLine(FileFormat format, String line, int lineIndex) {
         int spaces = format.getSpacesBeforeIfStatement();
         String aux = line;
-        if (line.matches(".*[ |\t]+if[ ]*[(].*")
-                || line.matches(".*[ |\t]+else[ ]+?")
-                || line.matches(".*else[ ]+if[ ]*[(].*")) {
-            aux = line.replaceAll("if[ ]*", "if" + StringHelper.getSpaces(spaces));
-            aux = aux.replaceAll("else[ ]*", "else" + StringHelper.getSpaces(spaces));
+        if (line.matches(".*[ |\t]+if\\b[ ]*[(].*")
+                || line.matches(".*[ |\t]+else\\b[ ]+?")
+                || line.matches(".*else[ ]+if\\b[ ]*[(].*")) {
+            aux = line.replaceAll("\\bif\\b[ ]*", "if" + StringHelper.getSpaces(spaces));
+            aux = aux.replaceAll("\\belse\\b[ ]*", "else" + StringHelper.getSpaces(spaces));
         }
         return aux;
     }
