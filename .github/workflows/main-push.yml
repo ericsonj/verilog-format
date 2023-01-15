@@ -16,15 +16,12 @@ jobs:
         run: sudo apt update && sudo apt install maven
       - name: Build project
         run: |
-          perl -0777 -pe 's{\s*<plugin>.*?</plugin>} \
-            { ($a = $&) !~ /launch4j-maven-plugin/ && $a || "" }gse' \
-            pom.xml > pom_new.xml && mv pom_new.xml pom.xml 
+          perl -0777 -pe 's{\s*<plugin>.*?</plugin>}{ ($a = $&) !~ /launch4j-maven-plugin/ && $a || "" }gse' pom.xml > pom_new.xml && mv pom_new.xml pom.xml 
           mvn clean package
       - name: publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd target
           RELEASE_FILE="verilog-format-1.0.1-full.jar"
           RELEASE_NAME="verilog-format.jar"
           RELEASE_TAG="$(date +%y%m%d)"
