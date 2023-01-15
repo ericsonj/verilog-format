@@ -1,0 +1,40 @@
+on:
+  push:
+    branches: [ master ]
+    
+jobs:
+  run:
+    name: Build project
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install toolchain
+        run: sudo apt update && sudo apt install maven
+      - name: Build project
+        run: |
+          perl -0777 -pe 's{\s*<plugin>.*?</plugin>} \
+            { ($a = $&) !~ /launch4j-maven-plugin/ && $a || "" }gse' \
+            pom.xml > pom_new.xml && mv pom_new.xml pom.xml 
+          mvn clean package
+      - name: publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd target
+          RELEASE_FILE="verilog-format-1.0.1-full.jar"
+          RELEASE_NAME="verilog-format.jar"
+          RELEASE_TAG="$(date +%y%m%d)"
+          curl -sL -XPOST -d '{"tag_name": "'$RELEASE_TAG'"}' \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H 'Content-Type: application/json' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
+          RELEASE_ID=$(curl -svL https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/$RELEASE_TAG | jq .id)
+          curl -sL -XPOST -T ${RELEASE_FILE}* \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type:application/octet-stream" \
+            "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/$RELEASE_ID/assets?&name=$RELEASE_NAME"
+        shell: bash
