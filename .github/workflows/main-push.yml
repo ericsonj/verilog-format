@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_FILE="verilog-format-1.0.1-full.jar"
+          RELEASE_FILE="verilog-format.jar"
           RELEASE_NAME="verilog-format.jar"
           RELEASE_TAG="$(date +%y%m%d)"
           curl -sL -XPOST -d '{"tag_name": "'$RELEASE_TAG'"}' \
