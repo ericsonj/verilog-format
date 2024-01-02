@@ -43,6 +43,7 @@ public class Module extends LineIndentable {
             case WAIT_ENDMODULE:
                 if (matchesEndmodule(line)) {
                     format.states.poll();
+                    format.resCountIndent();
                     return indent(format, moduleState.getBaseIndent(), line);
                 }
                 break;
