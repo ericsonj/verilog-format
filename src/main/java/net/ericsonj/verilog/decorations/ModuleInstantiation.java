@@ -25,7 +25,8 @@ public class ModuleInstantiation implements StyleImp {
             Matcher m = p.matcher(line);
             if (m.find()) {
                 String word = m.group(1);
-                boolean isModuelInst = (line.matches(".*[ ]+[(].*") || line.matches(".*" + word + "[ ]+[#][(].*"));
+                boolean isModuelInst = line.matches("^[ ]*" + Pattern.quote(word) + "[ ]+.*\\b[A-Za-z_][A-Za-z0-9_$]*[ ]*[(].*")
+                        || line.matches(".*" + Pattern.quote(word) + "[ ]+[#][(].*");
                 if (!VerilogHelper.isKeyWord(word) && isModuelInst) {
 //                    System.out.println(line);
                     ModuleAlign align = new ModuleAlign(word);

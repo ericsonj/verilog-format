@@ -14,10 +14,12 @@ public class CaseState extends StatementState {
     }
 
     private STATE state;
+    private boolean inCaseItem;
 
     public CaseState() {
         super("case", 0);
         this.state = STATE.INIT;
+        this.inCaseItem = false;
     }
 
     public STATE getState() {
@@ -26,6 +28,14 @@ public class CaseState extends StatementState {
 
     public void setState(STATE state) {
         this.state = state;
+    }
+
+    public boolean isInCaseItem() {
+        return inCaseItem;
+    }
+
+    public void setInCaseItem(boolean inCaseItem) {
+        this.inCaseItem = inCaseItem;
     }
 
 }

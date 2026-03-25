@@ -21,6 +21,9 @@ public abstract class AbstractLineDecoration implements StyleImp {
     public void applyStyle(FileFormat format, LinkedList<String> buffer) {
         for (int i = 0; i < buffer.size(); i++) {
             String line = buffer.get(i);
+            if (isLineComment(line)) {
+                continue;
+            }
             if (startBlockComment(line)) {
                 state = BLOCK_COMMNET_STATE.IN_BLOCK_COMMNET;
             }
@@ -46,6 +49,10 @@ public abstract class AbstractLineDecoration implements StyleImp {
 
     public boolean endBlockComment(String line) {
         return line.matches(".*\\*/");
+    }
+
+    public boolean isLineComment(String line) {
+        return line.matches("[ ]*//.*");
     }
 
 }

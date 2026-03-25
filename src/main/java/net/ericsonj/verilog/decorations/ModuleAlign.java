@@ -41,45 +41,50 @@ public class ModuleAlign implements StyleImp {
 //        if (align.equals("BAS_Align")) {
 //            process(buffer);
 //        }
-        int startModuleLine = getIdxLineMatches(buffer, "[ ]*" + keyWord + "[ ]+[a-zA-Z0-9-_,;&$# ]*.*", 0);
-        if (startModuleLine == -1) {
-            return;
-        }
+        int offset = 0;
+        while (offset < buffer.size()) {
+            int startModuleLine = getIdxLineMatches(buffer, "[ ]*" + keyWord + "[ ]+[a-zA-Z0-9-_,;&$# ]*.*", offset);
+            if (startModuleLine == -1) {
+                return;
+            }
 
-        int endModuleLine = getIdxLineMatches(buffer, ".*[)][ ]*[;][ ]*[//|/*]*.*", startModuleLine);
-        if (endModuleLine == -1) {
-            return;
-        }
+            int endModuleLine = getEndModuleLine(buffer, startModuleLine);
+            if (endModuleLine == -1) {
+                return;
+            }
 
-        removeComments(buffer, startModuleLine, endModuleLine);
+            commnets.clear();
+            removeComments(buffer, startModuleLine, endModuleLine);
 
-        String moduleDef = getModuleInLine(buffer, startModuleLine, endModuleLine);
+            String moduleDef = getModuleInLine(buffer, startModuleLine, endModuleLine);
 
-        LinkedList<String> resp = BASAlign(moduleDef);
+            LinkedList<String> resp = BASAlign(format, moduleDef);
 
-        int commentAlign = getMostLargeLineSize(resp);
+            int commentAlign = getMostLargeLineSize(resp);
 
-        for (int i = 0; i < resp.size(); i++) {
-            String line = resp.get(i);
-            String[] words = line.split(" ");
-            String lastWord = words[words.length - 1];
-            if (commnets.containsKey(lastWord)) {
-                LinkedList<String> lines = getCommentAlign(line, commentAlign, commnets.get(lastWord));
-                resp.remove(i);
-                resp.addAll(i, lines);
-            } else {
-                if (lastWord.matches("[^ ]+[)];")) {
-                    String newWordKey = lastWord.replace(");", "");
-                    if (commnets.containsKey(newWordKey)) {
-                        LinkedList<String> lines = getCommentAlign(line, commentAlign, commnets.get(newWordKey));
-                        resp.remove(i);
-                        resp.addAll(i, lines);
+            for (int i = 0; i < resp.size(); i++) {
+                String line = resp.get(i);
+                String[] words = line.split(" ");
+                String lastWord = words[words.length - 1];
+                if (commnets.containsKey(lastWord)) {
+                    LinkedList<String> lines = getCommentAlign(line, commentAlign, commnets.get(lastWord));
+                    resp.remove(i);
+                    resp.addAll(i, lines);
+                } else {
+                    if (lastWord.matches("[^ ]+[)];")) {
+                        String newWordKey = lastWord.replace(");", "");
+                        if (commnets.containsKey(newWordKey)) {
+                            LinkedList<String> lines = getCommentAlign(line, commentAlign, commnets.get(newWordKey));
+                            resp.remove(i);
+                            resp.addAll(i, lines);
+                        }
                     }
                 }
             }
-        }
 
-        replaceInBuffer(buffer, startModuleLine, endModuleLine, resp);
+            replaceInBuffer(buffer, startModuleLine, endModuleLine, resp);
+            offset = startModuleLine + resp.size();
+        }
 
     }
 
@@ -91,6 +96,23 @@ public class ModuleAlign implements StyleImp {
             }
         }
         return -1;
+    }
+
+    private int getEndModuleLine(LinkedList<String> buffer, int startModuleLine) {
+        if ("module".equals(keyWord)) {
+            int depth = 0;
+            for (int i = startModuleLine; i < buffer.size(); i++) {
+                String line = buffer.get(i);
+                depth += countChar(line, '(');
+                depth -= countChar(line, ')');
+                if (depth <= 0 && line.matches(".*;[ ]*[//|/*]*.*")) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        return getIdxLineMatches(buffer, ".*[)][ ]*[;][ ]*[//|/*]*.*", startModuleLine);
     }
 
     private String getModuleInLine(LinkedList<String> buffer, int startModuleLine, int endModuleLine) {
@@ -129,6 +151,16 @@ public class ModuleAlign implements StyleImp {
         return sb.toString();
     }
 
+    private int countChar(String value, char expected) {
+        int count = 0;
+        for (int i = 0; i < value.length(); i++) {
+            if (value.charAt(i) == expected) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private int getIndent(String line) {
         int indent = 0;
         for (int i = 0; i < line.length(); i++) {
@@ -141,85 +173,259 @@ public class ModuleAlign implements StyleImp {
         return indent;
     }
 
-    private LinkedList<String> BASAlign(String moduleInLine) {
+    private LinkedList<String> BASAlign(FileFormat format, String moduleInLine) {
 
         LinkedList<String> resp = new LinkedList<>();
+        int baseIndent = getIndent(moduleInLine);
+        String baseIndentStr = getSpaces(baseIndent);
+        String content = moduleInLine.trim();
+        String indentUnit = getSpaces(format.getIndentSize());
 
-        boolean moduleWithParam = moduleInLine.contains("#(");
-
-        int indentSize = 0;
-        int initParamBrackt = 0;
-        int endParamBrackt = 0;
+        boolean moduleWithParam = content.contains("#(");
+        int paramClose = -1;
 
         if (moduleWithParam) {
+            int paramOpen = content.indexOf("#(") + 1;
+            paramClose = findClosingBracket(content, paramOpen);
+            if (paramClose == -1) {
+                resp.add(moduleInLine);
+                return resp;
+            }
 
-            initParamBrackt = moduleInLine.indexOf("#(");
-            endParamBrackt = moduleInLine.indexOf(")");
+            resp.add(baseIndentStr + content.substring(0, paramOpen + 1));
 
-            resp.add(moduleInLine.substring(0, initParamBrackt + 2));
-
-            String paramArgs = moduleInLine.substring(initParamBrackt + 2, endParamBrackt);
-
-            StringTokenizer st = new StringTokenizer(paramArgs, ",");
-            int count = st.countTokens();
-            if (count == 1) {
-                resp.set(0, resp.getFirst() + paramArgs + moduleInLine.charAt(endParamBrackt));
+            LinkedList<String> paramArgs = splitTopLevelArgs(content.substring(paramOpen + 1, paramClose));
+            if (paramArgs.size() == 1) {
+                resp.set(0, resp.getFirst() + paramArgs.getFirst() + ")");
             } else {
-                for (int i = 0; i < count - 1; i++) {
-                    String arg = st.nextToken();
+                int paramIndent = resp.getFirst().length();
+                for (int i = 0; i < paramArgs.size() - 1; i++) {
+                    String arg = paramArgs.get(i);
                     if (i == 0) {
                         resp.set(0, resp.getFirst() + arg + ",");
                     } else {
-                        resp.add(indent(initParamBrackt + 1, arg + ","));
+                        resp.add(getSpaces(paramIndent) + arg + ",");
                     }
                 }
 
-                String arg = st.nextToken();
-                resp.addLast(indent(initParamBrackt + 1, arg) + moduleInLine.charAt(endParamBrackt));
+                resp.addLast(getSpaces(paramIndent) + paramArgs.getLast() + ")");
             }
-            indentSize = initParamBrackt;
-
         }
 
-        int initBracket = moduleInLine.indexOf("(", moduleWithParam ? endParamBrackt : 0);
-        int endBracket = moduleInLine.lastIndexOf(")");
+        int initBracket = content.indexOf("(", moduleWithParam ? paramClose + 1 : 0);
+        if (initBracket == -1) {
+            resp.clear();
+            resp.add(moduleInLine);
+            return resp;
+        }
 
-        int endParamLine = 0;
+        int endBracket = findClosingBracket(content, initBracket);
+        if (endBracket == -1) {
+            resp.clear();
+            resp.add(moduleInLine);
+            return resp;
+        }
+
         if (moduleWithParam) {
-            resp.add(indent(indentSize, moduleInLine.substring(moduleWithParam ? endParamBrackt + 1 : 0, initBracket + 1)));
-            endParamLine = resp.size() - 1;
-            indentSize++;
+            String instanceName = content.substring(paramClose + 1, initBracket).trim();
+            resp.add(baseIndentStr + indentUnit + instanceName + "(");
         } else {
-            resp.add(moduleInLine.substring(0, initBracket + 1));
-            indentSize = initBracket;
+            resp.add(baseIndentStr + content.substring(0, initBracket + 1));
         }
 
-        String moduleArgs = moduleInLine.substring(initBracket + 1, endBracket);
+        String moduleArgs = content.substring(initBracket + 1, endBracket);
         if (moduleArgs.isEmpty()) {
-            resp.set(endParamLine, resp.get(endParamLine) + moduleArgs + moduleInLine.substring(endBracket));
+            int lastLine = resp.size() - 1;
+            resp.set(lastLine, resp.get(lastLine) + content.substring(endBracket));
             return resp;
         }
 
-        StringTokenizer st = new StringTokenizer(moduleArgs, ",");
-        int count = st.countTokens();
-        if (count == 1) {
-            resp.set(endParamLine, resp.get(endParamLine) + moduleArgs + moduleInLine.substring(endBracket));
+        LinkedList<String> portArgs = splitTopLevelArgs(moduleArgs);
+        if ("module".equals(keyWord)) {
+            portArgs = alignModulePortDeclarations(portArgs);
+        } else {
+            portArgs = alignInstanceBrackets(portArgs);
+        }
+        int lastLine = resp.size() - 1;
+        if (portArgs.size() == 1) {
+            resp.set(lastLine, resp.get(lastLine) + moduleArgs + content.substring(endBracket));
             return resp;
         }
-        for (int i = 0; i < count - 1; i++) {
-            String arg = st.nextToken();
-            if (i == 0) {
-                resp.set(endParamLine, resp.get(endParamLine) + arg + ",");
-            } else {
-                resp.add(indent(indentSize, arg + ","));
-            }
+
+        String portIndent = baseIndentStr + (moduleWithParam ? indentUnit + indentUnit : indentUnit);
+        for (int i = 0; i < portArgs.size() - 1; i++) {
+            String arg = portArgs.get(i);
+            resp.add(portIndent + arg + ",");
         }
 
-        String arg = st.nextToken();
-        resp.addLast(indent(indentSize, arg) + moduleInLine.substring(endBracket));
+        String closingIndent = moduleWithParam ? baseIndentStr + indentUnit : baseIndentStr;
+        resp.addLast(portIndent + portArgs.getLast());
+        resp.addLast(closingIndent + content.substring(endBracket));
 
         return resp;
 
+    }
+
+    private String getSpaces(int count) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
+
+    private int findClosingBracket(String value, int openIndex) {
+        int depth = 0;
+        for (int i = openIndex; i < value.length(); i++) {
+            char current = value.charAt(i);
+            if (current == '(') {
+                depth++;
+            } else if (current == ')') {
+                depth--;
+                if (depth == 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private LinkedList<String> splitTopLevelArgs(String value) {
+        LinkedList<String> args = new LinkedList<>();
+        StringBuilder current = new StringBuilder();
+        int parenthesisDepth = 0;
+        int bracketDepth = 0;
+        int braceDepth = 0;
+
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            switch (ch) {
+                case '(':
+                    parenthesisDepth++;
+                    break;
+                case ')':
+                    parenthesisDepth--;
+                    break;
+                case '[':
+                    bracketDepth++;
+                    break;
+                case ']':
+                    bracketDepth--;
+                    break;
+                case '{':
+                    braceDepth++;
+                    break;
+                case '}':
+                    braceDepth--;
+                    break;
+                case ',':
+                    if (parenthesisDepth == 0 && bracketDepth == 0 && braceDepth == 0) {
+                        args.add(current.toString().trim());
+                        current.setLength(0);
+                        continue;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            current.append(ch);
+        }
+
+        args.add(current.toString().trim());
+        return args;
+    }
+
+    private LinkedList<String> alignModulePortDeclarations(LinkedList<String> args) {
+        LinkedList<String> alignedArgs = new LinkedList<>();
+        String currentDeclarationPrefix = null;
+
+        for (String arg : args) {
+            String declarationPrefix = getModulePortDeclarationPrefix(arg);
+            if (declarationPrefix != null) {
+                currentDeclarationPrefix = declarationPrefix;
+                alignedArgs.add(arg);
+                continue;
+            }
+
+            if (currentDeclarationPrefix != null && isBareIdentifier(arg)) {
+                alignedArgs.add(getSpaces(currentDeclarationPrefix.length() + 1) + arg.trim());
+                continue;
+            }
+
+            currentDeclarationPrefix = null;
+            alignedArgs.add(arg);
+        }
+
+        return alignedArgs;
+    }
+
+    private LinkedList<String> alignInstanceBrackets(LinkedList<String> args) {
+        int maxPortNameLength = 0;
+        LinkedList<String> alignedArgs = new LinkedList<>();
+
+        for (String arg : args) {
+            String portName = getNamedAssociationLeftSide(arg);
+            if (portName != null && portName.length() > maxPortNameLength) {
+                maxPortNameLength = portName.length();
+            }
+        }
+
+        if (maxPortNameLength == 0) {
+            alignedArgs.addAll(args);
+            return alignedArgs;
+        }
+
+        for (String arg : args) {
+            String portName = getNamedAssociationLeftSide(arg);
+            if (portName == null) {
+                alignedArgs.add(arg);
+                continue;
+            }
+
+            int openBracketIndex = arg.indexOf('(');
+            int closeBracketIndex = findClosingBracket(arg, openBracketIndex);
+            if (openBracketIndex == -1 || closeBracketIndex == -1) {
+                alignedArgs.add(arg);
+                continue;
+            }
+
+            String value = arg.substring(openBracketIndex + 1, closeBracketIndex).trim();
+            alignedArgs.add(portName + getSpaces(maxPortNameLength - portName.length() + 1) + "(" + value + ")");
+        }
+
+        return alignedArgs;
+    }
+
+    private String getNamedAssociationLeftSide(String arg) {
+        int openBracketIndex = arg.indexOf('(');
+        if (openBracketIndex <= 0 || !arg.trim().startsWith(".")) {
+            return null;
+        }
+
+        String portName = arg.substring(0, openBracketIndex).trim();
+        if (!portName.matches("\\.[A-Za-z_][A-Za-z0-9_$\\[\\]:]*")) {
+            return null;
+        }
+
+        return portName;
+    }
+
+    private String getModulePortDeclarationPrefix(String arg) {
+        String trimmed = arg.trim();
+        if (!trimmed.matches("^(input|output|inout)\\b.*\\b[A-Za-z_][A-Za-z0-9_$]*$")) {
+            return null;
+        }
+
+        int splitIndex = trimmed.lastIndexOf(' ');
+        if (splitIndex == -1) {
+            return null;
+        }
+
+        return trimmed.substring(0, splitIndex).trim();
+    }
+
+    private boolean isBareIdentifier(String arg) {
+        return arg.trim().matches("^[A-Za-z_][A-Za-z0-9_$]*$");
     }
 
     private void removeComments(LinkedList<String> buffer, int startModuleLine, int endModuleLine) {

@@ -72,7 +72,23 @@ public class If extends LineIndentable {
                         }
                         break;
                     case IN_BLOCK:
-                        if (matchesEnd(line)) {
+                        if (matchesEndElseIfBegin(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE_IF);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesEndElseIf(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE_IF);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesEndElseBegin(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesEndElse(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesEnd(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE_IF);
                             ifState.setStateBlock(IfState.BLOCK_STATE.INIT);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -143,7 +159,15 @@ public class If extends LineIndentable {
                         }
                         break;
                     case IN_BLOCK:
-                        if (matchesEnd(line)) {
+                        if (matchesEndElseBegin(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.IN_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesEndElse(line)) {
+                            ifState.setState(IfState.IF_STATE.ELSE);
+                            ifState.setStateBlock(IfState.BLOCK_STATE.MAYBE_BLOCK);
+                            return indent(format, ifState.getBaseIndent(), line);
+                        } else if (matchesEnd(line)) {
                             ifState.setState(IfState.IF_STATE.ELSE);
                             ifState.setStateBlock(IfState.BLOCK_STATE.INIT);
                             return indent(format, ifState.getBaseIndent(), line);
@@ -257,9 +281,19 @@ public class If extends LineIndentable {
         String ifBase = "[ ]*\\belse\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
+
+    private boolean matchesEndElse(String line) {
+        String ifBase = "[ ]*\\bend\\b[ ]+\\belse\\b";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
     
     private boolean matchesElseBegin(String line) {
         String ifBase = "[ ]*\\belse\\b[ ]*\\bbegin\\b";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+
+    private boolean matchesEndElseBegin(String line) {
+        String ifBase = "[ ]*\\bend\\b[ ]+\\belse\\b[ ]*\\bbegin\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
     
@@ -267,9 +301,19 @@ public class If extends LineIndentable {
         String ifBase = "[ ]*\\belse\\b[ ]*\\bif\\b[ ]*.*[)]";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
+
+    private boolean matchesEndElseIf(String line) {
+        String ifBase = "[ ]*\\bend\\b[ ]+\\belse\\b[ ]*\\bif\\b[ ]*.*[)]";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
     
     private boolean matchesElseIfBegin(String line) {
         String ifBase = "[ ]*\\belse\\b[ ]*\\bif\\b[ ]*.*[ ]*\\bbegin\\b";
+        return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
+    }
+
+    private boolean matchesEndElseIfBegin(String line) {
+        String ifBase = "[ ]*\\bend\\b[ ]+\\belse\\b[ ]*\\bif\\b[ ]*.*[ ]*\\bbegin\\b";
         return StringHelper.stringMatches(line, ifBase, ifBase + COMMNET);
     }
 

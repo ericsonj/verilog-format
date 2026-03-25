@@ -2,12 +2,14 @@ package net.ericsonj.verilog;
 
 import java.util.LinkedList;
 import net.ericsonj.verilog.statements.Always;
+import net.ericsonj.verilog.statements.AlwaysState;
 import net.ericsonj.verilog.statements.BlockComment;
 import net.ericsonj.verilog.statements.Case;
 import net.ericsonj.verilog.statements.For;
 import net.ericsonj.verilog.statements.Forever;
 import net.ericsonj.verilog.statements.Function;
 import net.ericsonj.verilog.statements.If;
+import net.ericsonj.verilog.statements.IfState;
 import net.ericsonj.verilog.statements.Initial;
 import net.ericsonj.verilog.statements.Module;
 import net.ericsonj.verilog.statements.Repeat;
@@ -50,6 +52,8 @@ public class IndentationStyle implements StyleImp {
     }
 
     private String processLine(FileFormat format, String line) {
+        closeCompletedSingleLineAlways(format);
+        closeCompletedIf(format, line.trim());
 
         int recursive = 0;
         if (format.states.isEmpty() || format.states.size() == 1) {
@@ -68,6 +72,65 @@ public class IndentationStyle implements StyleImp {
         }
 
         return indent(format, line);
+    }
+
+    private void closeCompletedSingleLineAlways(FileFormat format) {
+        if (format.states.isEmpty()) {
+            return;
+        }
+
+        StatementState state = format.states.peek();
+        if (!(state instanceof AlwaysState)) {
+            return;
+        }
+
+        AlwaysState alwaysState = (AlwaysState) state;
+        if (alwaysState.getState() != AlwaysState.STATE.WAIT_END) {
+            return;
+        }
+
+        format.resCountIndent();
+        format.states.poll();
+    }
+
+    private void closeCompletedIf(FileFormat format, String line) {
+        if (format.states.isEmpty()) {
+            return;
+        }
+
+        StatementState state = format.states.peek();
+        if (!(state instanceof IfState)) {
+            return;
+        }
+
+        IfState ifState = (IfState) state;
+        if (ifState.getState() == IfState.IF_STATE.ELSE_IF
+                && ifState.getStateBlock() == IfState.BLOCK_STATE.INIT) {
+            if (line.matches("[ ]*\\belse\\b.*")) {
+                return;
+            }
+            format.resCountIndent();
+            format.states.poll();
+            return;
+        }
+
+        if (ifState.getStateBlock() != IfState.BLOCK_STATE.NO_BLOCK) {
+            return;
+        }
+
+        if (line.matches("[ ]*")) {
+            return;
+        }
+
+        if (line.matches("[ ]*\\belse\\b.*")) {
+            if (ifState.getState() == IfState.IF_STATE.IF
+                    || ifState.getState() == IfState.IF_STATE.ELSE_IF) {
+                return;
+            }
+        }
+
+        format.resCountIndent();
+        format.states.poll();
     }
 
     private String indent(FileFormat format, String line) {

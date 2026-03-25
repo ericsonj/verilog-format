@@ -12,6 +12,7 @@ public class AlwaysState extends StatementState {
         INIT,
         MAYBE_BLOCK,
         WAIT_ENDBLOCK,
+        WAIT_END_NEXT_LINE,
         WAIT_END,
     }
 

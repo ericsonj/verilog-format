@@ -76,6 +76,18 @@ For build de project, Maven is needed.
 `$ mvn clean package`  
 `$ ls target/` 
 
+On Linux and macOS this generates the runnable fat jar in `target/`.
+On Windows it also generates `target/verilog-format.exe`.
+
+## CI And Release
+
+GitHub Actions runs the test suite on both Linux and Windows.
+
+Tagged releases with the `v*` pattern publish:
+
+- `target/verilog-format-<version>-full.jar`
+- `target/verilog-format.exe`
+
 ## Verilog-Format Style Options
 
 This options are setting in `.verilog-format.properties` file.

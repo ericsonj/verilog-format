@@ -11,10 +11,6 @@ public class SpacesTrailingComment extends AbstractLineDecoration {
 
     @Override
     public String decorateLine(FileFormat format, String line, int LineIndex) {
-        if (format.getSpacesAfterTrailingComments() == 0) {
-            return line;
-        }
-
         String aux = line;
         if (line.matches("[ ]*//.*")) {
             if (format.getSpacesAfterTrailingComments() > 0) {

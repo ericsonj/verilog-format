@@ -47,6 +47,21 @@ public class Case extends AbstractStatement<CaseState> {
                 }
                 break;
             case CASE:
+                if (state.isInCaseItem() && (matchesCaseItem(line) || matchesEndcase(line))) {
+                    format.resCountIndent();
+                    state.setInCaseItem(false);
+                }
+
+                if (matchesCaseItem(line) && !matchesBegin(line)) {
+                    int caseItemIndent = format.getCountIndent();
+                    String trimmed = line.trim();
+                    if (!hasInlineCaseItemStatement(trimmed)) {
+                        format.addCountIndent();
+                        state.setInCaseItem(true);
+                    }
+                    return indent(format, caseItemIndent, line);
+                }
+
                 if (matchesBegin(line)) {
                     int cIndent = format.getCountIndent();
                     format.addCountIndent();
@@ -100,6 +115,15 @@ public class Case extends AbstractStatement<CaseState> {
         String basic = ".*[ ]*" + KEYWORD_END;
         String comment = LINE_COMMENT;
         return StringHelper.stringMatches(line, basic, basic + comment);
+    }
+
+    private boolean matchesCaseItem(String line) {
+        return line.matches("[ ]*[^=?:]+:.*");
+    }
+
+    private boolean hasInlineCaseItemStatement(String line) {
+        String[] parts = line.split(":", 2);
+        return parts.length == 2 && !parts[1].trim().isEmpty();
     }
 
 }

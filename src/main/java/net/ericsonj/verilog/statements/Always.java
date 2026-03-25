@@ -50,7 +50,7 @@ public class Always extends AbstractStatement<AlwaysState> {
                     format.states.poll();
                     return indent(format, state.getBaseIndent(), line);
                 } else {
-                    state.setState(AlwaysState.STATE.WAIT_END);
+                    state.setState(AlwaysState.STATE.WAIT_END_NEXT_LINE);
                 }
                 break;
             case WAIT_ENDBLOCK:
@@ -60,14 +60,12 @@ public class Always extends AbstractStatement<AlwaysState> {
                     return indent(format, state.getBaseIndent(), line);
                 }
                 break;
+            case WAIT_END_NEXT_LINE:
+                state.setState(AlwaysState.STATE.WAIT_END);
+                return indent(format, line);
             case WAIT_END:
-                if (matchesEmpty(line)) {
-                    format.resCountIndent();
-                    format.states.poll();
-                } else if (line.matches("[ ]*endmodule") || line.matches("[ ]*end")) {
-                    format.resCountIndent();
-                    format.states.poll();
-                }
+                format.resCountIndent();
+                format.states.poll();
                 break;
             default:
                 break;
